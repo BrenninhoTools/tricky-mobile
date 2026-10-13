@@ -45,7 +45,8 @@ class OptionsMenu extends MusicBeatState
 		]),
 		
 		new OptionCatagory("Misc", [
-			new FPSOption("Toggle the FPS Counter")
+			new FPSOption("Toggle the FPS Counter"),
+			new UnlockAllOption("Marks the story mode as completed, unlocking Expurgation in Freeplay.")
 		])
 		
 	];

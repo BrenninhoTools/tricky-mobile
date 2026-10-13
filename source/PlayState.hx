@@ -2136,23 +2136,23 @@ class PlayState extends MusicBeatState
 								case 'trickyMask': // 1% chance
 									if (FlxG.random.bool(1) && !spookyRendered && !daNote.isSustainNote) // create spooky text :flushed:
 										{
-											createSpookyText(TrickyLinesSing[FlxG.random.int(0,TrickyLinesSing.length)]);
+											createSpookyText(FlxG.random.getObject(TrickyLinesSing));
 										}
 								case 'tricky': // 20% chance
 									if (FlxG.random.bool(20) && !spookyRendered && !daNote.isSustainNote) // create spooky text :flushed:
 										{
-											createSpookyText(TrickyLinesSing[FlxG.random.int(0,TrickyLinesSing.length)]);
+											createSpookyText(FlxG.random.getObject(TrickyLinesSing));
 										}
 								case 'trickyH': // 45% chance
 									if (FlxG.random.bool(45) && !spookyRendered && !daNote.isSustainNote) // create spooky text :flushed:
 										{
-											createSpookyText(TrickyLinesSing[FlxG.random.int(0,TrickyLinesSing.length)]);
+											createSpookyText(FlxG.random.getObject(TrickyLinesSing));
 										}
 									FlxG.camera.shake(0.02,0.2);
 								case 'exTricky': // 60% chance
 									if (FlxG.random.bool(60) && !spookyRendered && !daNote.isSustainNote) // create spooky text :flushed:
 										{
-											createSpookyText(ExTrickyLinesSing[FlxG.random.int(0,ExTrickyLinesSing.length)]);
+											createSpookyText(FlxG.random.getObject(ExTrickyLinesSing));
 										}
 							}
 		
@@ -2240,7 +2240,7 @@ class PlayState extends MusicBeatState
 			spookyText.x += 250;
 		}
 		spookyText.bold = true;
-		spookyText.text = text;
+		spookyText.text = text == null ? "" : text;
 		add(spookyText);
 	}
 
@@ -2271,9 +2271,15 @@ class PlayState extends MusicBeatState
 				LoadingState.loadAndSwitchState(new VideoState("assets/videos/TricksterMan.webm",new MainMenuState()));
 
 				if (storyDifficulty == 2)
+				{
 					FlxG.save.data.beatenHard = true;
+					FlxG.save.data.unlockBackupBeatenHard = true;
+				}
 				if (storyDifficulty >= 1)
+				{
 					FlxG.save.data.beaten = true;
+					FlxG.save.data.unlockBackupBeaten = true;
+				}
 
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
@@ -2797,7 +2803,7 @@ class PlayState extends MusicBeatState
 
 
 			if (dad.curCharacter.toLowerCase().contains("tricky") && FlxG.random.bool(dad.curCharacter == "tricky" ? 10 : 4) && !spookyRendered && curStage == "nevada") // create spooky text :flushed:
-				createSpookyText(TrickyLinesMiss[FlxG.random.int(0,TrickyLinesMiss.length)]);
+				createSpookyText(FlxG.random.getObject(TrickyLinesMiss));
 				
 
 			// FlxG.sound.play('assets/sounds/missnote1' + TitleState.soundExt, 1, false);

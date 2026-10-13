@@ -151,6 +151,11 @@
 
 	<!-- _________________________________ Mobile _______________________________ -->
 
+	<haxedef name="HXCPP_CHECK_POINTER" />
+	<haxedef name="HXCPP_STACK_LINE" />
+	<haxedef name="HXCPP_STACK_TRACE" />
+	<haxedef name="openfl-enable-handle-error" />
+
 	<config:android min-sdk-version="21" />
 	<architecture name="arm64" exclude="armv7" if="mobile" />
 

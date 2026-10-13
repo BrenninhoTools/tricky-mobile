@@ -55,6 +55,8 @@ class Main extends Sprite
 
 	private function setupGame():Void
 	{
+		CrashHandler.init();
+
 		#if !debug
 		initialState = TitleState;
 		#end
@@ -94,11 +96,24 @@ class Main extends Sprite
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
 		addChild(fpsCounter);
 		toggleFPS(FlxG.save.data.fps);
+
+		#if mobile
+		scaleFPS();
+		Lib.current.stage.addEventListener(Event.RESIZE, function(e:Event) scaleFPS());
+		#end
 	}
 
 	var game:FlxGame;
 
 	var fpsCounter:FPS;
+
+	#if mobile
+	function scaleFPS():Void
+	{
+		var scale:Float = Math.max(1, Lib.current.stage.stageHeight / 720);
+		fpsCounter.scaleX = fpsCounter.scaleY = scale;
+	}
+	#end
 
 	public function toggleFPS(fpsEnabled:Bool):Void {
 		fpsCounter.visible = fpsEnabled;
