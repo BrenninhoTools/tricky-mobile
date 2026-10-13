@@ -43,8 +43,7 @@
 	<classpath name="source" />
 
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
-	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web || mobile"/>
-	<assets path="assets/preload" rename="assets" exclude="*.mp3|*.webm" if="mobile"/>
+	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
 	
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
@@ -97,6 +96,7 @@
 	<haxelib name="extension-webm" unless="mobile"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod" unless="mobile"/>
+	<haxelib name="hxvlc" if="mobile"/>
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->

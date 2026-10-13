@@ -12,5 +12,6 @@ haxelib install flixel-ui 2.4.0 --quiet
 haxelib install hscript 2.5.0 --quiet
 haxelib install actuate 1.9.0 --quiet
 haxelib install newgrounds 1.1.0 --quiet
+haxelib git hxvlc https://github.com/MAJigsaw77/hxvlc 6f78d992b6f311717514f51343ae4dfd0d694bd2 --quiet
 
 haxelib list

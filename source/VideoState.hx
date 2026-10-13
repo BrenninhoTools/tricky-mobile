@@ -15,6 +15,10 @@ import openfl.utils.AssetType;
 
 import openfl.Lib;
 
+#if mobile
+import hxvlc.openfl.Video;
+#end
+
 using StringTools;
 
 class VideoState extends MusicBeatState
@@ -46,7 +50,7 @@ class VideoState extends MusicBeatState
 		super.create();
 
 		#if mobile
-		FlxG.switchState(transClass);
+		startMobileVideo();
 		return;
 		#end
 
@@ -121,6 +125,7 @@ class VideoState extends MusicBeatState
 		super.update(elapsed);
 
 		#if mobile
+		updateMobileVideo();
 		return;
 		#end
 		
@@ -214,4 +219,103 @@ class VideoState extends MusicBeatState
 		GlobalVideo.get().stopped = false;
 		GlobalVideo.get().ended = false;
 	}
+
+	#if mobile
+	var video:Video;
+	var videoFinished:Bool = false;
+
+	function startMobileVideo():Void
+	{
+		if (FlxG.sound.music != null)
+		{
+			fuckingVolume = FlxG.sound.music.volume;
+			FlxG.sound.music.volume = 0;
+		}
+
+		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		bg.scrollFactor.set();
+		add(bg);
+
+		video = new Video();
+		video.onFormatSetup.add(fitVideo);
+		video.onEndReached.add(finishMobileVideo);
+		video.onEncounteredError.add(function(message:String)
+		{
+			finishMobileVideo();
+		});
+		FlxG.addChildBelowMouse(video);
+
+		if (video.load(leSource))
+			new FlxTimer().start(0.001, function(tmr:FlxTimer)
+			{
+				if (video != null)
+					video.play();
+			});
+		else
+			finishMobileVideo();
+	}
+
+	function fitVideo():Void
+	{
+		if (video == null || video.bitmapData == null)
+			return;
+
+		var areaWidth:Float = FlxG.scaleMode.gameSize.x;
+		var areaHeight:Float = FlxG.scaleMode.gameSize.y;
+		var scale:Float = Math.min(areaWidth / video.bitmapData.width, areaHeight / video.bitmapData.height);
+
+		video.width = video.bitmapData.width * scale;
+		video.height = video.bitmapData.height * scale;
+		video.x = (areaWidth - video.width) / 2;
+		video.y = (areaHeight - video.height) / 2;
+	}
+
+	function updateMobileVideo():Void
+	{
+		if (videoFinished)
+			return;
+
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.volume = 0;
+
+		var skipped:Bool = controls.ACCEPT;
+		for (touch in FlxG.touches.list)
+			if (touch.justPressed)
+				skipped = true;
+
+		if (skipped)
+			finishMobileVideo();
+	}
+
+	function finishMobileVideo():Void
+	{
+		if (videoFinished)
+			return;
+
+		videoFinished = true;
+		disposeVideo();
+
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.volume = fuckingVolume;
+
+		FlxG.switchState(transClass);
+	}
+
+	function disposeVideo():Void
+	{
+		if (video == null)
+			return;
+
+		video.stop();
+		FlxG.removeChild(video);
+		video.dispose();
+		video = null;
+	}
+
+	override function destroy()
+	{
+		disposeVideo();
+		super.destroy();
+	}
+	#end
 }
