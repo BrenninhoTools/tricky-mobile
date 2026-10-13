@@ -45,21 +45,24 @@ jobs:
           haxelib run lime config JAVA_HOME $JAVA_HOME
           haxelib run lime config ANDROID_SETUP true
 
+      - name: Setup Signing
+        run: |
+          KEYSTORE="$RUNNER_TEMP/ci.keystore"
+          keytool -genkeypair -keystore "$KEYSTORE" -storepass android -keypass android -alias tricky -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=VsTricky,O=BrenninhoTools,C=BR"
+          mkdir -p export/release/android/bin/app
+          printf 'KEY_STORE=%s\nKEY_STORE_PASSWORD=android\nKEY_STORE_ALIAS=tricky\nKEY_STORE_ALIAS_PASSWORD=android\n' "$KEYSTORE" > export/release/android/bin/app/signing.properties
+
       - name: Build
         run: haxelib run lime build android -final
         env:
           ANDROID_GRADLE_TASK: assembleRelease
 
-      - name: Sign APK
+      - name: Collect APK
         run: |
-          BUILD_TOOLS=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
           APK=$(find export/release/android/bin/app/build/outputs/apk -name "*.apk" | head -n 1)
           if [ -z "$APK" ]; then echo "APK not found"; exit 1; fi
           mkdir -p dist
-          keytool -genkeypair -v -keystore ci.keystore -storepass android -keypass android -alias tricky -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=VsTricky,O=BrenninhoTools,C=BR"
-          $BUILD_TOOLS/zipalign -f -P 16 "$APK" dist/aligned.apk
-          $BUILD_TOOLS/apksigner sign --ks ci.keystore --ks-pass pass:android --key-pass pass:android --ks-key-alias tricky --out dist/VsTricky.apk dist/aligned.apk
-          rm dist/aligned.apk
+          cp "$APK" dist/VsTricky.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -74,6 +77,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install Neko Library
+        run: |
+          curl -sSL -o "$RUNNER_TEMP/neko.tar.gz" https://github.com/HaxeFoundation/neko/releases/download/v2-3-0/neko-2.3.0-osx64.tar.gz
+          tar xzf "$RUNNER_TEMP/neko.tar.gz" -C "$RUNNER_TEMP"
+          sudo mkdir -p /usr/local/lib
+          sudo cp "$RUNNER_TEMP"/neko-2.3.0-osx64/*.dylib /usr/local/lib/
 
       - name: Setup Haxe
         uses: krdlab/setup-haxe@v1
