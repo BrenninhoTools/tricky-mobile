@@ -30,28 +30,29 @@ btw special thanks to [GWebDev](https://github.com/GrowtopiaFli) for obviously v
 
 ## Mobile (Android / iOS)
 
-Every push to `master` builds an Android APK and an unsigned iOS IPA through GitHub Actions (`Actions` tab → `Mobile Build` → artifacts).
+Every push to `master` builds an Android APK (arm64) and an unsigned iOS IPA through GitHub Actions (`Actions` tab → `Mobile Build` → artifacts).
 
 To build locally, use Haxe 4.3.7 and these libraries:
 
 ```
-haxelib install hxcpp 4.3.2
-haxelib install lime 8.0.1
-haxelib install openfl 9.2.1
-haxelib install flixel 4.11.0
-haxelib install flixel-addons 2.11.0
-haxelib install flixel-ui 2.4.0
-haxelib install hscript 2.5.0
+haxelib install hxcpp-4.3.175.zip
+haxelib install lime 8.3.2
+haxelib install openfl 9.5.2
+haxelib install flixel 6.2.0
+haxelib install flixel-addons 4.0.1
+haxelib git flixel-ui https://github.com/HaxeFlixel/flixel-ui ff2f30148cb1a7c9b10373aa89cf1e0d7aafb648
+haxelib install hscript
 haxelib install actuate 1.9.0
-haxelib install newgrounds 1.1.0
 haxelib git hxvlc https://github.com/MAJigsaw77/hxvlc 6f78d992b6f311717514f51343ae4dfd0d694bd2
 ```
 
-Then run `lime build android -final` (Android SDK, JDK 11 and NDK r21e configured through `lime setup android`) or `lime build ios -nosign -final` on macOS with Xcode.
+`hxcpp-4.3.175.zip` comes from the [hxcpp releases](https://github.com/HaxeFoundation/hxcpp/releases/tag/v4.3.175).
 
-Mobile notes:
+Then run `lime build android -final` (Android SDK, JDK 17 and NDK r28c) or `lime build ios -nosign -final` on macOS with Xcode.
 
-- Gameplay uses a 4-lane hitbox by default; switch to the virtual pad in `Options → Gameplay → Controls`.
-- The pause button sits at the top center of the screen, and the Android back button acts as Escape.
-- Menus get a virtual pad; `A` confirms, the back button returns and `C` works as Shift in the options menu.
-- Story cutscenes play on mobile through hxvlc (libVLC), using the same `.webm` files; tap the screen to skip.
+Mobile controls are touch only:
+
+- Gameplay uses a 4-lane hitbox; the pause button sits in the top right corner.
+- In menus, swipe to move through options and tap to confirm.
+- The back button in the top left corner (or the Android back button) goes back.
+- Story cutscenes play through hxvlc (libVLC) using the same `.webm` files; tap to skip.

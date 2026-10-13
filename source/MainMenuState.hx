@@ -1,15 +1,11 @@
 package;
 
-#if mobile
-import mobile.VirtualPad;
-#end
-
 import openfl.text.TextFormatAlign;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.util.FlxTimer;
 import flixel.addons.display.FlxBackdrop;
 import flixel.FlxG;
@@ -72,7 +68,7 @@ class MainMenuState extends MusicBeatState
 
 		trans.animation.addByPrefix("Close","Jaws smol", 24, false);
 		
-		trace(trans.animation.frames);
+		trace(trans.animation.numFrames);
 
 		trans.setGraphicSize(Std.int(trans.width * 1.38));
 
@@ -84,7 +80,7 @@ class MainMenuState extends MusicBeatState
 		var foreground:FlxSprite = new FlxSprite(-750,110).loadGraphic(Paths.image('menu/Transforeground','clown'));
 		foreground.setGraphicSize(Std.int(foreground.width * 0.65));
 		add(foreground);
-		slider = new FlxBackdrop(Paths.image('menu/MenuSlider','clown'),1,0,true,false);
+		slider = new FlxBackdrop(Paths.image('menu/MenuSlider','clown'), X);
 		slider.velocity.set(-14,0);
 		slider.x = -20;
 		slider.y = 209;
@@ -382,7 +378,10 @@ class MainMenuState extends MusicBeatState
 		super.create();
 
 		#if mobile
-		addVirtualPad(DPadMode.LEFT_RIGHT, ActionMode.A_B);
+		addTouchControls();
+		touchGestures.ignored.push(shower);
+		if (tinyMan != null)
+			touchGestures.ignored.push(tinyMan);
 		#end
 	}
 

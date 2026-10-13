@@ -6,13 +6,11 @@ import haxe.xml.Fast as Access;
 #end
 import flash.geom.Rectangle;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxAtlasFrames.TexturePackerObject;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.graphics.frames.FlxFramesCollection.FlxFrameCollectionType;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
-import flixel.system.FlxAssets.FlxTexturePackerSource;
 import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxSprite;

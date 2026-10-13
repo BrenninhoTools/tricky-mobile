@@ -12,8 +12,8 @@ import flixel.util.FlxTimer;
 #if mobile
 import flixel.FlxCamera;
 import mobile.MobileControls;
+import mobile.TouchGestures;
 import mobile.TouchGroup;
-import mobile.VirtualPad;
 #end
 
 class MusicBeatState extends FlxUIState
@@ -29,7 +29,8 @@ class MusicBeatState extends FlxUIState
 		return PlayerSettings.player1.controls;
 
 	#if mobile
-	public var virtualPad:VirtualPad;
+	public var touchGestures:TouchGestures;
+	public var backButton:TouchGroup;
 	public var mobileControls:TouchGroup;
 	public var pauseButton:TouchGroup;
 
@@ -46,23 +47,42 @@ class MusicBeatState extends FlxUIState
 		return touchCamera;
 	}
 
-	public function addVirtualPad(dpad:DPadMode, action:ActionMode):VirtualPad
+	public function addTouchControls(withBack:Bool = true, withGestures:Bool = true):Void
 	{
-		removeVirtualPad();
-		virtualPad = new VirtualPad(dpad, action);
-		virtualPad.cameras = [getTouchCamera()];
-		add(virtualPad);
-		return virtualPad;
+		removeTouchControls();
+
+		if (withBack)
+		{
+			backButton = MobileControls.createBackButton();
+			backButton.cameras = [getTouchCamera()];
+			add(backButton);
+		}
+
+		if (withGestures)
+		{
+			touchGestures = new TouchGestures();
+			if (backButton != null)
+				for (button in backButton.buttons)
+					touchGestures.ignored.push(button);
+			add(touchGestures);
+		}
 	}
 
-	public function removeVirtualPad():Void
+	public function removeTouchControls():Void
 	{
-		if (virtualPad == null)
-			return;
+		if (touchGestures != null)
+		{
+			remove(touchGestures, true);
+			touchGestures.destroy();
+			touchGestures = null;
+		}
 
-		remove(virtualPad, true);
-		virtualPad.destroy();
-		virtualPad = null;
+		if (backButton != null)
+		{
+			remove(backButton, true);
+			backButton.destroy();
+			backButton = null;
+		}
 	}
 
 	public function addMobileControls(withPause:Bool = true):Void

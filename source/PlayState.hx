@@ -25,7 +25,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -192,9 +192,8 @@ class PlayState extends MusicBeatState
 		camHUD.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(camGame);
-		FlxG.cameras.add(camHUD);
+		FlxG.cameras.add(camHUD, false);
 
-		FlxCamera.defaultCameras = [camGame];
 
 		staticVar = this;
 
@@ -1202,7 +1201,7 @@ class PlayState extends MusicBeatState
 
 			trans.animation.addByPrefix("Close","Jaws smol", 24, false);
 			
-			trace(trans.animation.frames);
+			trace(trans.animation.numFrames);
 
 			trans.setGraphicSize(Std.int(trans.width * 1.6));
 

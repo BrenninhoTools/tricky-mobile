@@ -1,10 +1,6 @@
 package;
 
-#if mobile
-import mobile.VirtualPad;
-#end
-
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -67,7 +63,7 @@ class StoryMenuState extends MusicBeatState
 
 		trans.animation.addByPrefix("Close","Jaws smol", 24, false);
 		
-		trace(trans.animation.frames);
+		trace(trans.animation.numFrames);
 
 		trans.setGraphicSize(Std.int(trans.width * 1.38));
 		
@@ -223,7 +219,7 @@ class StoryMenuState extends MusicBeatState
 		super.create();
 
 		#if mobile
-		addVirtualPad(DPadMode.FULL, ActionMode.A_B);
+		addTouchControls();
 		#end
 	}
 

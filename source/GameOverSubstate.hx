@@ -1,9 +1,5 @@
 package;
 
-#if mobile
-import mobile.VirtualPad;
-#end
-
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSubState;
@@ -48,7 +44,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		bf.animation.resume();
 
 		#if mobile
-		addVirtualPad(DPadMode.NONE, ActionMode.A_B);
+		addTouchControls();
 		#end
 	}
 

@@ -1,9 +1,5 @@
 package;
 
-#if mobile
-import mobile.VirtualPad;
-#end
-
 import openfl.Lib;
 import Options;
 import Controls.Control;
@@ -25,9 +21,7 @@ class OptionsMenu extends MusicBeatState
 
 	var options:Array<OptionCatagory> = [
 		new OptionCatagory("Gameplay", [
-			#if mobile
-			new MobileControlsOption("Choose between the hitbox and the virtual pad for gameplay."),
-			#else
+			#if !mobile
 			new DFJKOption(controls),
 			#end
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
@@ -115,7 +109,7 @@ class OptionsMenu extends MusicBeatState
 		super.create();
 
 		#if mobile
-		addVirtualPad(DPadMode.FULL, ActionMode.A_B_C);
+		addTouchControls();
 		#end
 	}
 

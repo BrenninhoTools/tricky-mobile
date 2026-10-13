@@ -1,7 +1,4 @@
-#if mobile
-import mobile.VirtualPad;
-#end
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.FlxG;
 import flixel.addons.display.FlxBackdrop;
 import flixel.FlxSprite;
@@ -111,7 +108,7 @@ class MusicMenu extends MusicBeatState
 		hedge.setGraphicSize(Std.int(hedge.width * 0.65));
 		add(hedge);
         
-        var repeatLine:FlxBackdrop = new FlxBackdrop(Paths.image('menu/music/MusicRepeatLines','clown'),1,1,false,true);
+        var repeatLine:FlxBackdrop = new FlxBackdrop(Paths.image('menu/music/MusicRepeatLines','clown'), Y);
         repeatLine.velocity.set(0,14);
         repeatLine.screenCenter();
         repeatLine.x += 440;
@@ -257,7 +254,7 @@ class MusicMenu extends MusicBeatState
         }
 
         #if mobile
-        addVirtualPad(DPadMode.FULL, ActionMode.A_B);
+        addTouchControls();
         #end
     }
 

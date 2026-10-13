@@ -22,13 +22,13 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: zulu
-          java-version: '11'
+          java-version: '17'
 
       - name: Setup Android NDK
         id: ndk
         uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r21e
+          ndk-version: r28c
 
       - name: Setup Haxe
         uses: krdlab/setup-haxe@v1
@@ -37,9 +37,6 @@ jobs:
 
       - name: Install Libraries
         run: bash .github/scripts/install-libs.sh
-
-      - name: Patch Lime for ARM64 only
-        run: bash .github/scripts/patch-lime-arm64.sh
 
       - name: Configure Android
         run: |
@@ -60,7 +57,7 @@ jobs:
           if [ -z "$APK" ]; then echo "APK not found"; exit 1; fi
           mkdir -p dist
           keytool -genkeypair -v -keystore ci.keystore -storepass android -keypass android -alias tricky -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=VsTricky,O=BrenninhoTools,C=BR"
-          $BUILD_TOOLS/zipalign -f -p 4 "$APK" dist/aligned.apk
+          $BUILD_TOOLS/zipalign -f -P 16 "$APK" dist/aligned.apk
           $BUILD_TOOLS/apksigner sign --ks ci.keystore --ks-pass pass:android --key-pass pass:android --ks-key-alias tricky --out dist/VsTricky.apk dist/aligned.apk
           rm dist/aligned.apk
 

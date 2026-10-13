@@ -2,7 +2,7 @@
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.FlxSprite;
 
 // this class sucks, I hate myself\\

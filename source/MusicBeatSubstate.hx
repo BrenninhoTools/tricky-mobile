@@ -6,7 +6,9 @@ import flixel.FlxSubState;
 #if mobile
 import flixel.FlxCamera;
 import flixel.util.FlxColor;
-import mobile.VirtualPad;
+import mobile.MobileControls;
+import mobile.TouchGestures;
+import mobile.TouchGroup;
 #end
 
 class MusicBeatSubstate extends FlxSubState
@@ -27,40 +29,59 @@ class MusicBeatSubstate extends FlxSubState
 		return PlayerSettings.player1.controls;
 
 	#if mobile
-	public var virtualPad:VirtualPad;
+	public var touchGestures:TouchGestures;
+	public var backButton:TouchGroup;
 
 	var touchCamera:FlxCamera;
 
-	public function addVirtualPad(dpad:DPadMode, action:ActionMode):VirtualPad
+	public function addTouchControls(withBack:Bool = true, withGestures:Bool = true):Void
 	{
-		removeVirtualPad();
+		removeTouchControls();
 
-		if (touchCamera == null)
+		if (withBack)
 		{
-			touchCamera = new FlxCamera();
-			touchCamera.bgColor = FlxColor.TRANSPARENT;
-			FlxG.cameras.add(touchCamera, false);
+			if (touchCamera == null)
+			{
+				touchCamera = new FlxCamera();
+				touchCamera.bgColor = FlxColor.TRANSPARENT;
+				FlxG.cameras.add(touchCamera, false);
+			}
+
+			backButton = MobileControls.createBackButton();
+			backButton.cameras = [touchCamera];
+			add(backButton);
 		}
 
-		virtualPad = new VirtualPad(dpad, action);
-		virtualPad.cameras = [touchCamera];
-		add(virtualPad);
-		return virtualPad;
+		if (withGestures)
+		{
+			touchGestures = new TouchGestures();
+			if (backButton != null)
+				for (button in backButton.buttons)
+					touchGestures.ignored.push(button);
+			add(touchGestures);
+		}
 	}
 
-	public function removeVirtualPad():Void
+	public function removeTouchControls():Void
 	{
-		if (virtualPad == null)
-			return;
+		if (touchGestures != null)
+		{
+			remove(touchGestures, true);
+			touchGestures.destroy();
+			touchGestures = null;
+		}
 
-		remove(virtualPad, true);
-		virtualPad.destroy();
-		virtualPad = null;
+		if (backButton != null)
+		{
+			remove(backButton, true);
+			backButton.destroy();
+			backButton = null;
+		}
 	}
 
 	override function destroy()
 	{
-		removeVirtualPad();
+		removeTouchControls();
 
 		if (touchCamera != null)
 		{
