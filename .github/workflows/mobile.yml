@@ -38,6 +38,9 @@ jobs:
       - name: Install Libraries
         run: bash .github/scripts/install-libs.sh
 
+      - name: Patch Lime for ARM64 only
+        run: bash .github/scripts/patch-lime-arm64.sh
+
       - name: Configure Android
         run: |
           haxelib run lime config ANDROID_SDK $ANDROID_HOME
@@ -67,7 +70,7 @@ jobs:
 
   ios:
     name: iOS
-    runs-on: macos-14
+    runs-on: macos-15-intel
     steps:
       - name: Checkout
         uses: actions/checkout@v4

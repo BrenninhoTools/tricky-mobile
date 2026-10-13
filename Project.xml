@@ -12,7 +12,7 @@
 	<!-- <app preloader="Preloader" resizable="true" /> -->
 	<app preloader="flixel.system.FlxPreloader" />
 
-	<app file="VsTricky" if="mobile" />
+	<app title="FNF: Vs Tricky" file="VsTricky" if="mobile" />
 
 	<!--Minimum without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2-->
 	<set name="SWF_VERSION" value="11.8" />
@@ -153,6 +153,7 @@
 	<!-- _________________________________ Mobile _______________________________ -->
 
 	<config:android min-sdk-version="21" />
+	<architecture name="arm64" exclude="armv7" if="android" />
 
 	<config:ios deployment="12" />
 	<config:ios non-exempt-encryption="false" />
