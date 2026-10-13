@@ -50,11 +50,14 @@ jobs:
 
       - name: Build
         run: haxelib run lime build android -final
+        env:
+          ANDROID_GRADLE_TASK: assembleRelease
 
       - name: Sign APK
         run: |
           BUILD_TOOLS=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
-          APK=$(ls export/release/android/bin/app/build/outputs/apk/release/*.apk | head -n 1)
+          APK=$(find export/release/android/bin/app/build/outputs/apk -name "*.apk" | head -n 1)
+          if [ -z "$APK" ]; then echo "APK not found"; exit 1; fi
           mkdir -p dist
           keytool -genkeypair -v -keystore ci.keystore -storepass android -keypass android -alias tricky -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=VsTricky,O=BrenninhoTools,C=BR"
           $BUILD_TOOLS/zipalign -f -p 4 "$APK" dist/aligned.apk
