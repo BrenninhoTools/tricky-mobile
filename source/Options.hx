@@ -116,6 +116,29 @@ class DownscrollOption extends Option
 	}
 }
 
+#if mobile
+class InvisibleHitboxOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.invisibleHitbox = FlxG.save.data.invisibleHitbox != true;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Invisible Hitbox " + (FlxG.save.data.invisibleHitbox == true ? "on" : "off");
+	}
+}
+#end
+
 class GhostTapOption extends Option
 {
 	public function new(desc:String)

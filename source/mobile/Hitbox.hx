@@ -27,7 +27,8 @@ class Hitbox extends TouchGroup
 	function makeLane(atlas:FlxAtlasFrames, index:Int, laneWidth:Float, name:String, key:FlxKey):TouchButton
 	{
 		var button = new TouchButton(0, 0, [key]);
-		button.idleAlpha = 1;
+		button.idleAlpha = 0;
+		button.pressedAlpha = FlxG.save.data.invisibleHitbox == true ? 0 : 1;
 		button.loadTile(atlas, name, 160, 360);
 		button.resize(Math.ceil(laneWidth), FlxG.height);
 		button.setPosition(laneWidth * index, 0);

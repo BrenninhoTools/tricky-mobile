@@ -21,7 +21,9 @@ class OptionsMenu extends MusicBeatState
 
 	var options:Array<OptionCatagory> = [
 		new OptionCatagory("Gameplay", [
-			#if !mobile
+			#if mobile
+			new InvisibleHitboxOption("Hide the hitbox lanes completely, even while pressing them."),
+			#else
 			new DFJKOption(controls),
 			#end
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
