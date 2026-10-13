@@ -1,5 +1,9 @@
 package;
 
+#if mobile
+import mobile.VirtualPad;
+#end
+
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSubState;
@@ -42,6 +46,10 @@ class GameOverSubstate extends MusicBeatSubstate
 		
 		bf.playAnim('firstDeath');
 		bf.animation.resume();
+
+		#if mobile
+		addVirtualPad(DPadMode.NONE, ActionMode.A_B);
+		#end
 	}
 
 	var playedMic:Bool = false;

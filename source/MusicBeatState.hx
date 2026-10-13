@@ -9,6 +9,12 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
+#if mobile
+import flixel.FlxCamera;
+import mobile.MobileControls;
+import mobile.TouchGroup;
+import mobile.VirtualPad;
+#end
 
 class MusicBeatState extends FlxUIState
 {
@@ -21,6 +27,78 @@ class MusicBeatState extends FlxUIState
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
+
+	#if mobile
+	public var virtualPad:VirtualPad;
+	public var mobileControls:TouchGroup;
+	public var pauseButton:TouchGroup;
+
+	var touchCamera:FlxCamera;
+
+	public function getTouchCamera():FlxCamera
+	{
+		if (touchCamera == null || !FlxG.cameras.list.contains(touchCamera))
+		{
+			touchCamera = new FlxCamera();
+			touchCamera.bgColor = FlxColor.TRANSPARENT;
+			FlxG.cameras.add(touchCamera, false);
+		}
+		return touchCamera;
+	}
+
+	public function addVirtualPad(dpad:DPadMode, action:ActionMode):VirtualPad
+	{
+		removeVirtualPad();
+		virtualPad = new VirtualPad(dpad, action);
+		virtualPad.cameras = [getTouchCamera()];
+		add(virtualPad);
+		return virtualPad;
+	}
+
+	public function removeVirtualPad():Void
+	{
+		if (virtualPad == null)
+			return;
+
+		remove(virtualPad, true);
+		virtualPad.destroy();
+		virtualPad = null;
+	}
+
+	public function addMobileControls(withPause:Bool = true):Void
+	{
+		removeMobileControls();
+
+		mobileControls = MobileControls.createGameplay();
+		mobileControls.cameras = [getTouchCamera()];
+		add(mobileControls);
+
+		if (withPause)
+		{
+			pauseButton = MobileControls.createPauseButton();
+			pauseButton.cameras = [getTouchCamera()];
+			add(pauseButton);
+			mobileControls.blockers = pauseButton.buttons;
+		}
+	}
+
+	public function removeMobileControls():Void
+	{
+		if (mobileControls != null)
+		{
+			remove(mobileControls, true);
+			mobileControls.destroy();
+			mobileControls = null;
+		}
+
+		if (pauseButton != null)
+		{
+			remove(pauseButton, true);
+			pauseButton.destroy();
+			pauseButton = null;
+		}
+	}
+	#end
 
 	override function create()
 	{
@@ -71,6 +149,10 @@ class MusicBeatState extends FlxUIState
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 
 		super.update(elapsed);
+
+		#if mobile
+		FlxG.mouse.visible = false;
+		#end
 	}
 
 	private function updateBeat():Void

@@ -1,3 +1,6 @@
+#if mobile
+import mobile.VirtualPad;
+#end
 import flixel.math.FlxMath;
 import flixel.FlxCamera;
 import flixel.math.FlxPoint;
@@ -102,6 +105,9 @@ class GameplayCustomizeState extends MusicBeatState
 
         FlxG.mouse.visible = true;
 
+        #if mobile
+        addVirtualPad(DPadMode.NONE, ActionMode.B);
+        #end
     }
 
     override function update(elapsed:Float) {

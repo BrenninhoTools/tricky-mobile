@@ -1,5 +1,9 @@
 package;
 
+#if mobile
+import mobile.VirtualPad;
+#end
+
 import flixel.system.FlxSound;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -217,6 +221,10 @@ class StoryMenuState extends MusicBeatState
 		trace("Line 165");
 
 		super.create();
+
+		#if mobile
+		addVirtualPad(DPadMode.FULL, ActionMode.A_B);
+		#end
 	}
 
 	override function update(elapsed:Float)

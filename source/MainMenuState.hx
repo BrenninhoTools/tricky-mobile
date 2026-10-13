@@ -1,5 +1,9 @@
 package;
 
+#if mobile
+import mobile.VirtualPad;
+#end
+
 import openfl.text.TextFormatAlign;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
@@ -376,6 +380,10 @@ class MainMenuState extends MusicBeatState
 		listOfButtons[selectedIndex].highlight();
 
 		super.create();
+
+		#if mobile
+		addVirtualPad(DPadMode.LEFT_RIGHT, ActionMode.A_B);
+		#end
 	}
 
 	public static function setDiff()

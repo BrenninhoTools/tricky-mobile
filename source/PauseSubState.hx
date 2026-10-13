@@ -1,5 +1,9 @@
 package;
 
+#if mobile
+import mobile.VirtualPad;
+#end
+
 import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -81,6 +85,10 @@ class PauseSubState extends MusicBeatSubstate
 		FlxTween.globalManager.active = false;
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+
+		#if mobile
+		addVirtualPad(DPadMode.UP_DOWN, ActionMode.A);
+		#end
 	}
 
 	override function update(elapsed:Float)

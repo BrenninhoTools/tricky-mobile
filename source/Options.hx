@@ -95,6 +95,29 @@ class DFJKOption extends Option
 	}
 }
 
+#if mobile
+class MobileControlsOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		mobile.MobileControls.toggleMode();
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Controls: " + mobile.MobileControls.mode;
+	}
+}
+#end
+
 class DownscrollOption extends Option
 {
 	public function new(desc:String)

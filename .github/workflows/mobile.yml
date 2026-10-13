@@ -1,0 +1,100 @@
+name: Mobile Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+env:
+  HAXE_VERSION: 4.2.5
+
+jobs:
+  android:
+    name: Android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '11'
+
+      - name: Setup Android NDK
+        id: ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r21e
+
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: ${{ env.HAXE_VERSION }}
+
+      - name: Install Libraries
+        run: bash .github/scripts/install-libs.sh
+
+      - name: Configure Android
+        run: |
+          haxelib run lime config ANDROID_SDK $ANDROID_HOME
+          haxelib run lime config ANDROID_NDK_ROOT ${{ steps.ndk.outputs.ndk-path }}
+          haxelib run lime config JAVA_HOME $JAVA_HOME
+          haxelib run lime config ANDROID_SETUP true
+
+      - name: Build
+        run: haxelib run lime build android -final
+
+      - name: Sign APK
+        run: |
+          BUILD_TOOLS=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
+          APK=$(ls export/release/android/bin/app/build/outputs/apk/release/*.apk | head -n 1)
+          mkdir -p dist
+          keytool -genkeypair -v -keystore ci.keystore -storepass android -keypass android -alias tricky -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=VsTricky,O=BrenninhoTools,C=BR"
+          $BUILD_TOOLS/zipalign -f -p 4 "$APK" dist/aligned.apk
+          $BUILD_TOOLS/apksigner sign --ks ci.keystore --ks-pass pass:android --key-pass pass:android --ks-key-alias tricky --out dist/VsTricky.apk dist/aligned.apk
+          rm dist/aligned.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: VsTricky-Android
+          path: dist/VsTricky.apk
+          if-no-files-found: error
+
+  ios:
+    name: iOS
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: ${{ env.HAXE_VERSION }}
+
+      - name: Install Libraries
+        run: bash .github/scripts/install-libs.sh
+
+      - name: Build
+        run: haxelib run lime build ios -nosign -final
+
+      - name: Package IPA
+        run: |
+          APP=$(ls -d export/release/ios/build/Release-iphoneos/*.app | head -n 1)
+          mkdir -p dist/Payload
+          cp -R "$APP" dist/Payload/
+          cd dist
+          zip -qr VsTricky.ipa Payload
+          rm -rf Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: VsTricky-iOS
+          path: dist/VsTricky.ipa
+          if-no-files-found: error

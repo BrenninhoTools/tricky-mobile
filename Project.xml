@@ -12,6 +12,8 @@
 	<!-- <app preloader="Preloader" resizable="true" /> -->
 	<app preloader="flixel.system.FlxPreloader" />
 
+	<app file="VsTricky" if="mobile" />
+
 	<!--Minimum without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2-->
 	<set name="SWF_VERSION" value="11.8" />
 
@@ -41,7 +43,8 @@
 	<classpath name="source" />
 
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
-	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
+	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web || mobile"/>
+	<assets path="assets/preload" rename="assets" exclude="*.mp3|*.webm" if="mobile"/>
 	
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
@@ -66,7 +69,7 @@
 	<assets path="assets/clown"    library="clown"    exclude="*.ogg" if="web"/>
 	<assets path="assets/clown"    library="clown"    exclude="*.mp3" unless="web"/>
 
-	<assets path='example_mods' rename='mods' embed='false'/>
+	<assets path='example_mods' rename='mods' embed='false' unless="mobile"/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<!-- <template path='mods' /> -->
 	
@@ -91,9 +94,9 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="actuate" />
 	<haxelib name="newgrounds"/>
-	<haxelib name="extension-webm"/>
+	<haxelib name="extension-webm" unless="mobile"/>
 	<haxelib name="faxe" if='switch'/>
-	<haxelib name="polymod"/>
+	<haxelib name="polymod" unless="mobile"/>
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->
@@ -146,5 +149,12 @@
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 	<haxedef name="NG_LOGIN" if="newgrounds" />
+
+	<!-- _________________________________ Mobile _______________________________ -->
+
+	<config:android min-sdk-version="21" />
+
+	<config:ios deployment="12" />
+	<config:ios non-exempt-encryption="false" />
 	
 </project>

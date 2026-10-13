@@ -44,6 +44,12 @@ class VideoState extends MusicBeatState
 	override function create()
 	{
 		super.create();
+
+		#if mobile
+		FlxG.switchState(transClass);
+		return;
+		#end
+
 		FlxG.autoPause = false;
 		doShit = false;
 		
@@ -113,6 +119,10 @@ class VideoState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		#if mobile
+		return;
+		#end
 		
 		if (useSound)
 		{

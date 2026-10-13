@@ -1,5 +1,9 @@
 package;
 
+#if mobile
+import mobile.VirtualPad;
+#end
+
 import openfl.Lib;
 import Options;
 import Controls.Control;
@@ -21,16 +25,20 @@ class OptionsMenu extends MusicBeatState
 
 	var options:Array<OptionCatagory> = [
 		new OptionCatagory("Gameplay", [
+			#if mobile
+			new MobileControlsOption("Choose between the hitbox and the virtual pad for gameplay."),
+			#else
 			new DFJKOption(controls),
+			#end
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
-			#if desktop
+			#if (desktop || mobile)
 			new FPSCapOption("Cap your FPS (Left for -10, Right for +10. SHIFT to go faster)"),
 			#end
 			new ScrollSpeedOption("Change your scroll speed (Left for -0.1, right for +0.1. If it's at 1, it will be chart dependent)"),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 		]),
 		new OptionCatagory("Appearance", [
-			#if desktop
+			#if (desktop || mobile)
 			new AccuracyOption("Display accuracy information."),
 			new NPSDisplayOption("Shows your current Notes Per Second."),
 			new SongPositionOption("Show the songs current position (as a bar)"),
@@ -105,6 +113,10 @@ class OptionsMenu extends MusicBeatState
 		add(menuShade);
 
 		super.create();
+
+		#if mobile
+		addVirtualPad(DPadMode.FULL, ActionMode.A_B_C);
+		#end
 	}
 
 	var isCat:Bool = false;

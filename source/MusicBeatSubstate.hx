@@ -3,6 +3,11 @@ package;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.FlxSubState;
+#if mobile
+import flixel.FlxCamera;
+import flixel.util.FlxColor;
+import mobile.VirtualPad;
+#end
 
 class MusicBeatSubstate extends FlxSubState
 {
@@ -20,6 +25,53 @@ class MusicBeatSubstate extends FlxSubState
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
+
+	#if mobile
+	public var virtualPad:VirtualPad;
+
+	var touchCamera:FlxCamera;
+
+	public function addVirtualPad(dpad:DPadMode, action:ActionMode):VirtualPad
+	{
+		removeVirtualPad();
+
+		if (touchCamera == null)
+		{
+			touchCamera = new FlxCamera();
+			touchCamera.bgColor = FlxColor.TRANSPARENT;
+			FlxG.cameras.add(touchCamera, false);
+		}
+
+		virtualPad = new VirtualPad(dpad, action);
+		virtualPad.cameras = [touchCamera];
+		add(virtualPad);
+		return virtualPad;
+	}
+
+	public function removeVirtualPad():Void
+	{
+		if (virtualPad == null)
+			return;
+
+		remove(virtualPad, true);
+		virtualPad.destroy();
+		virtualPad = null;
+	}
+
+	override function destroy()
+	{
+		removeVirtualPad();
+
+		if (touchCamera != null)
+		{
+			if (FlxG.cameras.list.contains(touchCamera))
+				FlxG.cameras.remove(touchCamera);
+			touchCamera = null;
+		}
+
+		super.destroy();
+	}
+	#end
 
 	override function update(elapsed:Float)
 	{

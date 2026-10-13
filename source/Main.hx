@@ -1,6 +1,8 @@
 package;
 
+#if desktop
 import webm.WebmPlayer;
+#end
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.FlxGame;
@@ -74,6 +76,10 @@ class Main extends Sprite
 
 		addChild(game);
 
+		#if mobile
+		mobile.TouchKeyBridge.init();
+		#end
+
 
 		var ourSource:String = "assets/videos/DO NOT DELETE OR GAME WILL CRASH/dontDelete.webm";
         
@@ -98,12 +104,9 @@ class Main extends Sprite
         #end 
 
 
-		#if !mobile
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
 		addChild(fpsCounter);
 		toggleFPS(FlxG.save.data.fps);
-
-		#end
 	}
 
 	var game:FlxGame;

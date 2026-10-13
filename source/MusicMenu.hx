@@ -1,3 +1,6 @@
+#if mobile
+import mobile.VirtualPad;
+#end
 import flixel.system.FlxSound;
 import flixel.FlxG;
 import flixel.addons.display.FlxBackdrop;
@@ -252,6 +255,10 @@ class MusicMenu extends MusicBeatState
             currentSelected = yingSongs[yingSelected];
             updateSong(yingSongs[yingSelected].pognt);
         }
+
+        #if mobile
+        addVirtualPad(DPadMode.FULL, ActionMode.A_B);
+        #end
     }
 
     function updateSong(song:String)

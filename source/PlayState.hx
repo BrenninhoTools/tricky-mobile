@@ -721,6 +721,10 @@ class PlayState extends MusicBeatState
 		}
 
 		super.create();
+
+		#if mobile
+		addMobileControls();
+		#end
 	}
 
 	function doStopSign(sign:Int = 0, fuck:Bool = false)

@@ -1,5 +1,9 @@
 package;
 
+#if mobile
+import mobile.VirtualPad;
+#end
+
 import flixel.addons.transition.FlxTransitionableState;
 import AlphabetTricky.TrickyAlphaCharacter;
 import flixel.system.FlxSound;
@@ -106,6 +110,9 @@ class FreeplayState extends MusicBeatState
 
 		songs[0].highlight();
 
+		#if mobile
+		addVirtualPad(DPadMode.FULL, ActionMode.A_B);
+		#end
 	}
 
 	function diffGet()
