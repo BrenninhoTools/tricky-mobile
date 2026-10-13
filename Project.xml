@@ -153,9 +153,10 @@
 	<!-- _________________________________ Mobile _______________________________ -->
 
 	<config:android min-sdk-version="21" />
-	<architecture name="arm64" exclude="armv7" if="android" />
+	<architecture name="arm64" exclude="armv7" if="mobile" />
 
 	<config:ios deployment="12" />
 	<config:ios non-exempt-encryption="false" />
+	<config:ios allow-provisioning-updates="false" allow-provisioning-device-registration="false" />
 	
 </project>

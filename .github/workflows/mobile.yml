@@ -83,6 +83,11 @@ jobs:
       - name: Install Libraries
         run: bash .github/scripts/install-libs.sh
 
+      - name: Disable Code Signing
+        run: |
+          printf 'CODE_SIGNING_ALLOWED = NO\nCODE_SIGNING_REQUIRED = NO\nCODE_SIGN_IDENTITY =\nDEVELOPMENT_TEAM =\n' > "$RUNNER_TEMP/nosign.xcconfig"
+          echo "XCODE_XCCONFIG_FILE=$RUNNER_TEMP/nosign.xcconfig" >> "$GITHUB_ENV"
+
       - name: Build
         run: haxelib run lime build ios -nosign -final
 

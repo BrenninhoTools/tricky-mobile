@@ -44,7 +44,7 @@ class MobileControls
 		var size:Int = 96;
 		var button = new TouchButton(0, 0, [FlxKey.ENTER]);
 		button.loadAnimated(Paths.getSparrowAtlas('mobile/pauseButton', 'shared'), 'pause', size);
-		button.setPosition((FlxG.width - button.width) / 2, 16);
+		button.setPosition(FlxG.width - button.width - 20, 20);
 		group.addButton(button);
 		return group;
 	}
