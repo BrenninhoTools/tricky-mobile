@@ -44,8 +44,8 @@ class OptionsMenu extends MusicBeatState
 		
 		#if mobile
 		new OptionCatagory("Mobile Options", [
-			new HitboxModeOption("Four Lanes splits the screen in four lanes, Arrows shows four arrow buttons at the bottom."),
-			new InvisibleHitboxOption("Hide the hitbox completely, even while pressing it.")
+			new HitboxModeOption("Four Lanes splits the screen in four lanes. Arrows moves your strumline to the bottom and you tap the strums."),
+			new InvisibleHitboxOption("Hide the Four Lanes hitbox completely, even while pressing it.")
 		]),
 		#end
 		new OptionCatagory("Misc", [

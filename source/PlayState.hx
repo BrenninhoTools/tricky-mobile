@@ -87,6 +87,20 @@ class PlayState extends MusicBeatState
 	var tStaticSound:FlxSound = new FlxSound().loadEmbedded(Paths.sound("staticSound","preload"));
 
 	private var strumLine:FlxSprite;
+
+	public static var downscroll(get, never):Bool;
+
+	static function get_downscroll():Bool
+	{
+		return FlxG.save.data.downscroll #if mobile || mobile.MobileControls.hitboxMode == mobile.MobileControls.ARROWS #end;
+	}
+
+	#if mobile
+	static final ARROW_CENTERS:Array<Float> = [140, 350, 930, 1140];
+
+	var arrowMode:Bool = false;
+	var laneShift:Array<Float> = [0, 0, 0, 0];
+	#end
 	private var curSection:Int = 0;
 
 	private var camFollow:FlxObject;
@@ -155,6 +169,10 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		#if mobile
+		arrowMode = mobile.MobileControls.hitboxMode == mobile.MobileControls.ARROWS;
+		#end
+
 		KeyBinds.keyCheck();
 
 		FlxG.sound.cache(Paths.inst(PlayState.SONG.song));
@@ -527,7 +545,7 @@ class PlayState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
 
-		if (FlxG.save.data.downscroll)
+		if (PlayState.downscroll)
 			strumLine.y = FlxG.height - 165;
 
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
@@ -570,7 +588,7 @@ class PlayState extends MusicBeatState
 
 
 		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
-		if (FlxG.save.data.downscroll)
+		if (PlayState.downscroll)
 			healthBarBG.y = 50;
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
@@ -619,7 +637,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.y = healthBarBG.y + 50;
 		add(scoreTxt);
 
-		replayTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 75, healthBarBG.y + (FlxG.save.data.downscroll ? 100 : -100), 0, "REPLAY", 20);
+		replayTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 75, healthBarBG.y + (PlayState.downscroll ? 100 : -100), 0, "REPLAY", 20);
 		replayTxt.setFormat(Paths.font("vcr.ttf"), 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		replayTxt.scrollFactor.set();
 		if (loadRep)
@@ -723,6 +741,8 @@ class PlayState extends MusicBeatState
 
 		#if mobile
 		addMobileControls();
+		if (arrowMode)
+			mobileControls.targets = playerStrums.members;
 		#end
 	}
 
@@ -753,7 +773,7 @@ class PlayState extends MusicBeatState
 				daSign.animation.addByPrefix('sign','Signature Stop Sign 3',24, false);
 				daSign.x = FlxG.width - 780;
 				daSign.angle = -90;
-				if (FlxG.save.data.downscroll)
+				if (PlayState.downscroll)
 					daSign.y = -395;
 				else
 					daSign.y = -980;
@@ -817,7 +837,7 @@ class PlayState extends MusicBeatState
 
 		add(gramlan);
 
-		if(FlxG.save.data.downscroll){
+		if(PlayState.downscroll){
 			gramlan.flipY = true;
 			gramlan.y -= 150;
 		}
@@ -1796,6 +1816,20 @@ class PlayState extends MusicBeatState
 			babyArrow.x += 50;
 			babyArrow.x += ((FlxG.width / 2) * player);
 
+			#if mobile
+			if (arrowMode)
+			{
+				if (player == 1)
+				{
+					var arrowX:Float = ARROW_CENTERS[i] - babyArrow.width / 2;
+					laneShift[i] = arrowX - babyArrow.x;
+					babyArrow.x = arrowX;
+				}
+				else
+					babyArrow.visible = false;
+			}
+			#end
+
 			strumLineNotes.add(babyArrow);
 		}
 	}
@@ -2071,6 +2105,10 @@ class PlayState extends MusicBeatState
 			if (unspawnNotes[0].strumTime - Conductor.songPosition < 1500)
 			{
 				var dunceNote:Note = unspawnNotes[0];
+				#if mobile
+				if (arrowMode && dunceNote.mustPress)
+					dunceNote.x += laneShift[dunceNote.noteData];
+				#end
 				notes.add(dunceNote);
 
 				var index:Int = unspawnNotes.indexOf(dunceNote);
@@ -2101,6 +2139,11 @@ class PlayState extends MusicBeatState
 							daNote.visible = true;
 							daNote.active = true;
 						}
+
+						#if mobile
+						if (arrowMode && !daNote.mustPress)
+							daNote.visible = false;
+						#end
 		
 						if (!daNote.mustPress && daNote.wasGoodHit)
 						{
@@ -2168,17 +2211,17 @@ class PlayState extends MusicBeatState
 						}
 		
 
-						if (FlxG.save.data.downscroll)
+						if (PlayState.downscroll)
 							daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (-0.45 * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2)));	
 						else
 							daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2)));
 						
-						daNote.y -= (daNote.burning ? ((curStage != 'auditorHell' && FlxG.save.data.downscroll) ? 185 : 65 ) : 0);
+						daNote.y -= (daNote.burning ? ((curStage != 'auditorHell' && PlayState.downscroll) ? 185 : 65 ) : 0);
 		
 						// WIP interpolation shit? Need to fix the pause issue
 						// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 		
-						if (daNote.y < -daNote.height && !FlxG.save.data.downscroll || daNote.y >= strumLine.y + 106 && FlxG.save.data.downscroll)
+						if (daNote.y < -daNote.height && !PlayState.downscroll || daNote.y >= strumLine.y + 106 && PlayState.downscroll)
 							{
 								if (daNote.isSustainNote && daNote.wasGoodHit)
 								{

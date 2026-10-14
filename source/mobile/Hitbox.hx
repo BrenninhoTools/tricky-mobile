@@ -14,18 +14,15 @@ class Hitbox extends FlxSpriteGroup implements TouchKeySource
 {
 	static final KEYS:Array<FlxKey> = [FlxKey.LEFT, FlxKey.DOWN, FlxKey.UP, FlxKey.RIGHT];
 	static final COLORS:Array<FlxColor> = [0xFFC24B99, 0xFF00FFFF, 0xFF12FA05, 0xFFF9393F];
-	static final ARROW_NAMES:Array<String> = ['left', 'down', 'up', 'right'];
-	static final ARROW_CENTERS:Array<Float> = [140, 350, 930, 1140];
 	static inline var BORDER:Int = 5;
 	static inline var FADE_TIME:Float = 0.12;
-	static inline var ARROW_SIZE:Int = 170;
 	static inline var ARROW_REACH:Float = 150;
-	static inline var ARROW_IDLE_ALPHA:Float = 0.6;
 
 	public var lanes(default, null):Array<FlxSprite> = [];
 	public var blockers:Array<FlxSprite> = [];
 	public var invisible:Bool;
 	public var arrowMode(default, null):Bool;
+	public var targets:Array<FlxSprite>;
 
 	var down:Array<Bool> = [false, false, false, false];
 	var excluded:Array<Int> = [];
@@ -42,9 +39,7 @@ class Hitbox extends FlxSpriteGroup implements TouchKeySource
 		arrowMode = MobileControls.hitboxMode == MobileControls.ARROWS;
 		laneWidth = FlxG.width / KEYS.length;
 
-		if (arrowMode)
-			createArrows();
-		else
+		if (!arrowMode)
 			createLanes();
 
 		createdFrame = TouchKeyBridge.frame;
@@ -61,25 +56,6 @@ class Hitbox extends FlxSpriteGroup implements TouchKeySource
 			lane.alpha = 0;
 			lanes.push(lane);
 			add(lane);
-		}
-	}
-
-	function createArrows():Void
-	{
-		var atlas = Paths.getSparrowAtlas('mobile/arrows', 'shared');
-		for (i in 0...KEYS.length)
-		{
-			var arrow:FlxSprite = new FlxSprite();
-			arrow.frames = atlas;
-			arrow.animation.addByPrefix('idle', ARROW_NAMES[i], 0, false);
-			arrow.animation.play('idle');
-			arrow.setGraphicSize(ARROW_SIZE, ARROW_SIZE);
-			arrow.updateHitbox();
-			arrow.setPosition(ARROW_CENTERS[i] - arrow.width / 2, FlxG.height - arrow.height - 24);
-			arrow.antialiasing = true;
-			arrow.alpha = invisible ? 0 : ARROW_IDLE_ALPHA;
-			lanes.push(arrow);
-			add(arrow);
 		}
 	}
 
@@ -124,9 +100,15 @@ class Hitbox extends FlxSpriteGroup implements TouchKeySource
 	{
 		var best:Int = -1;
 		var bestDistance:Float = ARROW_REACH;
-		for (i in 0...lanes.length)
+		if (targets == null)
+			return best;
+
+		for (i in 0...targets.length)
 		{
-			var arrow:FlxSprite = lanes[i];
+			var arrow:FlxSprite = targets[i];
+			if (arrow == null || i >= KEYS.length)
+				continue;
+
 			var dx:Float = x - (arrow.x + arrow.width / 2);
 			var dy:Float = y - (arrow.y + arrow.height / 2);
 			var distance:Float = Math.sqrt(dx * dx + dy * dy);
@@ -192,18 +174,6 @@ class Hitbox extends FlxSpriteGroup implements TouchKeySource
 		super.update(elapsed);
 		lastFrame = TouchKeyBridge.frame;
 
-		if (arrowMode)
-		{
-			for (i in 0...lanes.length)
-			{
-				var target:Float = invisible ? 0 : (down[i] ? 1 : ARROW_IDLE_ALPHA);
-				lanes[i].alpha = target;
-				var scale:Float = (down[i] ? 0.9 : 1) * ARROW_SIZE / lanes[i].frameWidth;
-				lanes[i].scale.set(scale, scale);
-			}
-			return;
-		}
-
 		for (i in 0...lanes.length)
 		{
 			if (down[i] && !invisible)
@@ -218,6 +188,7 @@ class Hitbox extends FlxSpriteGroup implements TouchKeySource
 		TouchKeyBridge.unregister(this);
 		lanes = [];
 		blockers = [];
+		targets = null;
 		super.destroy();
 	}
 }
