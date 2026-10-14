@@ -114,6 +114,8 @@ class OptionsMenu extends MusicBeatState
 		#if mobile
 		addTouchControls();
 		touchGestures.onTap = menuTap;
+		for (button in backButton.buttons)
+			button.cooldown = 0.7;
 		#end
 	}
 

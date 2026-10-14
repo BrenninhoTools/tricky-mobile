@@ -3,6 +3,7 @@ package mobile;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.input.keyboard.FlxKey;
+import haxe.Timer;
 import mobile.TouchInput.TouchPoint;
 
 class TouchButton extends FlxSprite
@@ -11,7 +12,12 @@ class TouchButton extends FlxSprite
 	public var idleAlpha:Float = 0.7;
 	public var pressedAlpha:Float = 1;
 	public var padding:Float = 18;
+	public var cooldown:Float = 0.45;
 	public var pressed(default, null):Bool = false;
+
+	var handled:Array<Int> = [];
+	var readyTime:Float = 0;
+	var flashTime:Float = 0;
 
 	public function new(x:Float, y:Float, keys:Array<FlxKey>)
 	{
@@ -41,11 +47,37 @@ class TouchButton extends FlxSprite
 		return TouchInput.overlaps(this, point.startX, point.startY, padding);
 	}
 
-	public function setPressed(value:Bool):Void
+	public function poll(createdFrame:Int, usable:Bool):Void
 	{
-		if (value && !pressed && animation.exists("pressed"))
-			animation.play("pressed", true);
-		pressed = value;
+		var trigger:Bool = false;
+		var present:Array<Int> = [];
+
+		for (point in TouchInput.points)
+		{
+			present.push(point.id);
+
+			if (!usable || point.startFrame < createdFrame || handled.contains(point.id) || !startsInside(point))
+				continue;
+
+			handled.push(point.id);
+			if (Timer.stamp() >= readyTime)
+				trigger = true;
+		}
+
+		var i:Int = handled.length;
+		while (i-- > 0)
+			if (!present.contains(handled[i]))
+				handled.splice(i, 1);
+
+		if (trigger)
+		{
+			readyTime = Timer.stamp() + cooldown;
+			flashTime = 0.18;
+			if (animation.exists("pressed"))
+				animation.play("pressed", true);
+		}
+
+		pressed = trigger;
 	}
 
 	public function collectKeys(into:Array<Int>):Void
@@ -61,8 +93,12 @@ class TouchButton extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		alpha = pressed ? pressedAlpha : idleAlpha;
-		if (!pressed && animation.name == "pressed" && animation.finished)
+
+		if (flashTime > 0)
+			flashTime -= elapsed;
+
+		alpha = flashTime > 0 ? pressedAlpha : idleAlpha;
+		if (flashTime <= 0 && animation.name == "pressed" && animation.finished)
 			animation.play("normal");
 	}
 }

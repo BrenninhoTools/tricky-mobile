@@ -30,13 +30,7 @@ class TouchGroup extends FlxSpriteGroup implements TouchKeySource
 
 		for (button in buttons)
 		{
-			var down:Bool = false;
-			if (usable)
-				for (point in TouchInput.points)
-					if (point.down && point.startFrame >= createdFrame && button.startsInside(point))
-						down = true;
-
-			button.setPressed(down);
+			button.poll(createdFrame, usable);
 			button.collectKeys(into);
 		}
 	}

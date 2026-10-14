@@ -1,7 +1,9 @@
 package mobile;
 
 import flixel.FlxG;
+import flixel.FlxCamera;
 import flixel.FlxSprite;
+import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxRect;
 import haxe.Timer;
 import openfl.Lib;
@@ -92,7 +94,15 @@ class TouchInput
 		if (sprite == null || !sprite.exists)
 			return false;
 
-		sprite.getScreenBounds(bounds, sprite.camera);
+		var camera:FlxCamera = sprite.camera;
+		if (camera == null)
+			camera = FlxG.camera;
+
+		if (Std.isOfType(sprite, FlxSpriteGroup) || sprite.frame == null)
+			bounds.set(sprite.x - camera.scroll.x * sprite.scrollFactor.x, sprite.y - camera.scroll.y * sprite.scrollFactor.y, sprite.width, sprite.height);
+		else
+			sprite.getScreenBounds(bounds, camera);
+
 		return x >= bounds.x - padding && x <= bounds.right + padding && y >= bounds.y - padding && y <= bounds.bottom + padding;
 	}
 
