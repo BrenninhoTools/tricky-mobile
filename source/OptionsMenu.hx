@@ -21,9 +21,7 @@ class OptionsMenu extends MusicBeatState
 
 	var options:Array<OptionCatagory> = [
 		new OptionCatagory("Gameplay", [
-			#if mobile
-			new InvisibleHitboxOption("Hide the hitbox lanes completely, even while pressing them."),
-			#else
+			#if !mobile
 			new DFJKOption(controls),
 			#end
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
@@ -44,6 +42,12 @@ class OptionsMenu extends MusicBeatState
 			#end
 		]),
 		
+		#if mobile
+		new OptionCatagory("Mobile Options", [
+			new HitboxModeOption("Four Lanes splits the screen in four lanes, Arrows shows four arrow buttons at the bottom."),
+			new InvisibleHitboxOption("Hide the hitbox completely, even while pressing it.")
+		]),
+		#end
 		new OptionCatagory("Misc", [
 			new FPSOption("Toggle the FPS Counter"),
 			new UnlockAllOption("Marks the story mode as completed, unlocking Expurgation in Freeplay.")

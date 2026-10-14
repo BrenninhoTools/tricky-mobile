@@ -9,6 +9,11 @@ on:
 
 env:
   HAXE_VERSION: 4.3.7
+  HXCPP_COMPILE_CACHE: ${{ github.workspace }}/.hxcpp-cache
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   android:
@@ -17,6 +22,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Use All CPU Cores
+        run: echo "HXCPP_COMPILE_THREADS=$(nproc)" >> "$GITHUB_ENV"
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -29,14 +37,45 @@ jobs:
         uses: nttld/setup-ndk@v1
         with:
           ndk-version: r28c
+          local-cache: true
 
       - name: Setup Haxe
         uses: krdlab/setup-haxe@v1
         with:
           haxe-version: ${{ env.HAXE_VERSION }}
 
+      - name: Cache Haxelib
+        id: haxelib-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/haxelib
+          key: haxelib-${{ runner.os }}-${{ env.HAXE_VERSION }}-${{ hashFiles('.github/scripts/install-libs.sh') }}
+
       - name: Install Libraries
+        if: steps.haxelib-cache.outputs.cache-hit != 'true'
         run: bash .github/scripts/install-libs.sh
+
+      - name: Use Cached Libraries
+        if: steps.haxelib-cache.outputs.cache-hit == 'true'
+        run: haxelib setup "$HOME/haxelib"
+
+      - name: Cache Native Objects
+        uses: actions/cache@v4
+        with:
+          path: .hxcpp-cache
+          key: hxcpp-${{ runner.os }}-${{ hashFiles('.github/scripts/install-libs.sh') }}-${{ hashFiles('source/**', 'Project.xml') }}
+          restore-keys: |
+            hxcpp-${{ runner.os }}-${{ hashFiles('.github/scripts/install-libs.sh') }}-
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('.github/scripts/install-libs.sh') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
       - name: Configure Android
         run: |
@@ -70,4 +109,5 @@ jobs:
           name: VsTricky-Android
           path: dist/VsTricky.apk
           if-no-files-found: error
+          compression-level: 0
 

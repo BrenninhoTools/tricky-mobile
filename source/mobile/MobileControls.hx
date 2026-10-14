@@ -5,6 +5,28 @@ import flixel.input.keyboard.FlxKey;
 
 class MobileControls
 {
+	public static inline var FOUR_LANES:String = "Four Lanes";
+	public static inline var ARROWS:String = "Arrows";
+
+	public static var hitboxMode(get, set):String;
+
+	static function get_hitboxMode():String
+	{
+		return FlxG.save.data.hitboxMode == ARROWS ? ARROWS : FOUR_LANES;
+	}
+
+	static function set_hitboxMode(value:String):String
+	{
+		FlxG.save.data.hitboxMode = value;
+		FlxG.save.flush();
+		return value;
+	}
+
+	public static function toggleHitboxMode():String
+	{
+		return hitboxMode = (hitboxMode == ARROWS ? FOUR_LANES : ARROWS);
+	}
+
 	public static function createGameplay():Hitbox
 	{
 		return new Hitbox();

@@ -52,7 +52,7 @@ Then run `lime build android -final` with the Android SDK, JDK 17 and NDK r28c.
 
 Mobile controls are touch only:
 
-- Gameplay uses a 4-lane hitbox that lights up only while touched (or stays hidden with Invisible Hitbox); the pause button sits in the top right corner.
+- Gameplay uses a hitbox chosen in `Options → Mobile Options → Hitbox Mode`: Four Lanes (the screen split in four lanes that light up while touched) or Arrows (four arrow buttons at the bottom). Invisible Hitbox hides either one. The pause button sits in the top right corner.
 - In menus, tap an option to select it and tap it again to confirm; dragging steps through options and values.
 - The back button in the top left corner (or the Android back button) goes back.
 - Story cutscenes play through hxvlc (libVLC) using the same `.webm` files; tap to skip.

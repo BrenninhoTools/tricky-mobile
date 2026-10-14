@@ -117,6 +117,27 @@ class DownscrollOption extends Option
 }
 
 #if mobile
+class HitboxModeOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		mobile.MobileControls.toggleHitboxMode();
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Hitbox Mode: " + mobile.MobileControls.hitboxMode;
+	}
+}
+
 class InvisibleHitboxOption extends Option
 {
 	public function new(desc:String)
