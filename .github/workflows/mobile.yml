@@ -9,7 +9,6 @@ on:
 
 env:
   HAXE_VERSION: 4.3.7
-  HXCPP_COMPILE_CACHE: ${{ github.workspace }}/.hxcpp-cache
 
 concurrency:
   group: android-${{ github.ref }}
@@ -59,10 +58,10 @@ jobs:
         if: steps.haxelib-cache.outputs.cache-hit == 'true'
         run: haxelib setup "$HOME/haxelib"
 
-      - name: Cache Native Objects
+      - name: Cache Native Build
         uses: actions/cache@v4
         with:
-          path: .hxcpp-cache
+          path: export/release/android/obj
           key: hxcpp-${{ runner.os }}-${{ hashFiles('.github/scripts/install-libs.sh') }}-${{ hashFiles('source/**', 'Project.xml') }}
           restore-keys: |
             hxcpp-${{ runner.os }}-${{ hashFiles('.github/scripts/install-libs.sh') }}-
