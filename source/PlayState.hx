@@ -96,7 +96,7 @@ class PlayState extends MusicBeatState
 	}
 
 	#if mobile
-	static final ARROW_CENTERS:Array<Float> = [140, 350, 930, 1140];
+	static final ARROW_CENTERS:Array<Float> = [200, 390, 890, 1080];
 
 	var arrowMode:Bool = false;
 	var laneShift:Array<Float> = [0, 0, 0, 0];
