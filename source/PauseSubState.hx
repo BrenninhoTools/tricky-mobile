@@ -177,13 +177,12 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		for (i in 0...grpMenuShit.members.length)
 		{
-			if (!mobile.TouchInput.overlaps(grpMenuShit.members[i], x, y, 10))
+			if (!mobile.TouchInput.overlaps(grpMenuShit.members[i], x, y, 16))
 				continue;
-			if (i == curSelected)
-				return false;
 
-			changeSelection(i - curSelected);
-			return true;
+			if (i != curSelected)
+				changeSelection(i - curSelected);
+			return false;
 		}
 		return true;
 	}

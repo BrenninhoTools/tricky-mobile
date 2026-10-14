@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="MenuTricky.png">
-<!-- Created with Kades Custom Converter -->
-<SubTexture name="menutricky0001.png" x="1" y="1" width="626" height="645" frameX="-0" frameY="-0" frameWidth="626" frameHeight="645"/>
-<SubTexture name="menutricky0002.png" x="629" y="1" width="626" height="645" frameX="-0" frameY="-0" frameWidth="626" frameHeight="645"/>
-<SubTexture name="menutricky0003.png" x="1" y="648" width="626" height="645" frameX="-0" frameY="-0" frameWidth="626" frameHeight="645"/>
-<SubTexture name="menutricky0004.png" x="629" y="648" width="626" height="645" frameX="-0" frameY="-0" frameWidth="626" frameHeight="645"/>
-<SubTexture name="menutricky0005.png" x="1257" y="1" width="626" height="645" frameX="-0" frameY="-0" frameWidth="626" frameHeight="645"/>
+	<SubTexture name="menutricky0001.png" x="0" y="1282" width="620" height="632" frameX="-3" frameY="-13" frameWidth="626" frameHeight="645"/>
+	<SubTexture name="menutricky0002.png" x="0" y="647" width="612" height="633" frameX="-7" frameY="-12" frameWidth="626" frameHeight="645"/>
+	<SubTexture name="menutricky0003.png" x="0" y="0" width="626" height="645" frameX="0" frameY="0" frameWidth="626" frameHeight="645"/>
+	<SubTexture name="menutricky0004.png" x="0" y="2549" width="624" height="612" frameX="-1" frameY="-33" frameWidth="626" frameHeight="645"/>
+	<SubTexture name="menutricky0005.png" x="0" y="1916" width="615" height="631" frameX="-5" frameY="-14" frameWidth="626" frameHeight="645"/>
 </TextureAtlas>
