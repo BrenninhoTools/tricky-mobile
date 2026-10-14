@@ -22,9 +22,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use All CPU Cores
-        run: echo "HXCPP_COMPILE_THREADS=$(nproc)" >> "$GITHUB_ENV"
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -36,7 +33,6 @@ jobs:
         uses: nttld/setup-ndk@v1
         with:
           ndk-version: r28c
-          local-cache: true
 
       - name: Setup Haxe
         uses: krdlab/setup-haxe@v1
@@ -89,6 +85,11 @@ jobs:
           keytool -genkeypair -keystore "$KEYSTORE" -storepass android -keypass android -alias tricky -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=VsTricky,O=BrenninhoTools,C=BR"
           mkdir -p export/release/android/bin/app
           printf 'KEY_STORE=%s\nKEY_STORE_PASSWORD=android\nKEY_STORE_ALIAS=tricky\nKEY_STORE_ALIAS_PASSWORD=android\n' "$KEYSTORE" > export/release/android/bin/app/signing.properties
+
+      - name: Check NDK
+        run: |
+          NDK="${{ steps.ndk.outputs.ndk-path }}"
+          ls "$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/typeinfo"
 
       - name: Build
         run: haxelib run lime build android -final
