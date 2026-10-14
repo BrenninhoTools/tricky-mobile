@@ -175,16 +175,25 @@ class PauseSubState extends MusicBeatSubstate
 	#if mobile
 	function menuTap(x:Float, y:Float):Bool
 	{
+		var best:Int = -1;
+		var bestDistance:Float = 75;
 		for (i in 0...grpMenuShit.members.length)
 		{
-			if (!mobile.TouchInput.overlaps(grpMenuShit.members[i], x, y, 16))
-				continue;
-
-			if (i != curSelected)
-				changeSelection(i - curSelected);
-			return false;
+			var item = grpMenuShit.members[i];
+			var distance:Float = Math.abs(y - (item.y + item.height / 2));
+			if (distance < bestDistance)
+			{
+				bestDistance = distance;
+				best = i;
+			}
 		}
-		return true;
+
+		if (best == -1)
+			return true;
+
+		if (best != curSelected)
+			changeSelection(best - curSelected);
+		return false;
 	}
 	#end
 }

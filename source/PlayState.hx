@@ -96,10 +96,10 @@ class PlayState extends MusicBeatState
 	}
 
 	#if mobile
-	static final ARROW_CENTERS:Array<Float> = [200, 390, 890, 1080];
+	static final ARROW_CENTERS:Array<Float> = [245, 415, 865, 1035];
+	static inline var ARROW_SCALE:Float = 1.2;
 
 	var arrowMode:Bool = false;
-	var laneShift:Array<Float> = [0, 0, 0, 0];
 	#end
 	private var curSection:Int = 0;
 
@@ -1821,9 +1821,9 @@ class PlayState extends MusicBeatState
 			{
 				if (player == 1)
 				{
-					var arrowX:Float = ARROW_CENTERS[i] - babyArrow.width / 2;
-					laneShift[i] = arrowX - babyArrow.x;
-					babyArrow.x = arrowX;
+					babyArrow.scale.set(babyArrow.scale.x * ARROW_SCALE, babyArrow.scale.y * ARROW_SCALE);
+					babyArrow.updateHitbox();
+					babyArrow.x = ARROW_CENTERS[i] - babyArrow.width / 2;
 				}
 				else
 					babyArrow.visible = false;
@@ -2107,7 +2107,13 @@ class PlayState extends MusicBeatState
 				var dunceNote:Note = unspawnNotes[0];
 				#if mobile
 				if (arrowMode && dunceNote.mustPress)
-					dunceNote.x += laneShift[dunceNote.noteData];
+				{
+					dunceNote.scale.x *= ARROW_SCALE;
+					if (!dunceNote.isSustainNote)
+						dunceNote.scale.y *= ARROW_SCALE;
+					dunceNote.updateHitbox();
+					dunceNote.x = ARROW_CENTERS[dunceNote.noteData] - dunceNote.width / 2;
+				}
 				#end
 				notes.add(dunceNote);
 
