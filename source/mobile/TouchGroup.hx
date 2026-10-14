@@ -5,14 +5,15 @@ import flixel.group.FlxSpriteGroup;
 class TouchGroup extends FlxSpriteGroup implements TouchKeySource
 {
 	public var buttons(default, null):Array<TouchButton> = [];
-	public var blockers:Array<TouchButton> = [];
 
+	var createdFrame:Int;
 	var lastFrame:Int = -1;
 
 	public function new()
 	{
 		super();
 		scrollFactor.set();
+		createdFrame = TouchKeyBridge.frame;
 		TouchKeyBridge.register(this);
 	}
 
@@ -23,25 +24,21 @@ class TouchGroup extends FlxSpriteGroup implements TouchKeySource
 		return button;
 	}
 
-	public function anyPressed():Bool
-	{
-		for (button in buttons)
-			if (button.pressed)
-				return true;
-		return false;
-	}
-
 	public function collectKeys(into:Array<Int>):Void
 	{
-		if (!exists || !alive || !visible || !active || lastFrame != TouchKeyBridge.frame)
-			return;
-
-		for (blocker in blockers)
-			if (blocker != null && blocker.exists && blocker.pressed)
-				return;
+		var usable:Bool = exists && alive && visible && active && TouchKeyBridge.isActive(lastFrame);
 
 		for (button in buttons)
+		{
+			var down:Bool = false;
+			if (usable)
+				for (point in TouchInput.points)
+					if (point.down && point.startFrame >= createdFrame && button.startsInside(point))
+						down = true;
+
+			button.setPressed(down);
 			button.collectKeys(into);
+		}
 	}
 
 	override function update(elapsed:Float)
@@ -54,7 +51,6 @@ class TouchGroup extends FlxSpriteGroup implements TouchKeySource
 	{
 		TouchKeyBridge.unregister(this);
 		buttons = [];
-		blockers = [];
 		super.destroy();
 	}
 }

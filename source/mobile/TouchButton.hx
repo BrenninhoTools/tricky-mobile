@@ -1,16 +1,17 @@
 package mobile;
 
+import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.graphics.frames.FlxTileFrames;
 import flixel.input.keyboard.FlxKey;
-import flixel.math.FlxPoint;
-import flixel.ui.FlxButton;
+import mobile.TouchInput.TouchPoint;
 
-class TouchButton extends FlxButton
+class TouchButton extends FlxSprite
 {
 	public var keys:Array<FlxKey>;
 	public var idleAlpha:Float = 0.7;
 	public var pressedAlpha:Float = 1;
+	public var padding:Float = 18;
+	public var pressed(default, null):Bool = false;
 
 	public function new(x:Float, y:Float, keys:Array<FlxKey>)
 	{
@@ -23,22 +24,10 @@ class TouchButton extends FlxButton
 		scrollFactor.set();
 	}
 
-	public function loadTile(atlas:FlxAtlasFrames, name:String, tileWidth:Int, tileHeight:Int):TouchButton
-	{
-		var point = FlxPoint.get(tileWidth, tileHeight);
-		frames = FlxTileFrames.fromFrame(atlas.getByName(name), point);
-		point.put();
-		resetSizeFromFrame();
-		updateHitbox();
-		alpha = idleAlpha;
-		return this;
-	}
-
 	public function loadAnimated(atlas:FlxAtlasFrames, prefix:String, targetHeight:Int):TouchButton
 	{
 		frames = atlas;
 		animation.add("normal", [0]);
-		animation.add("highlight", [0]);
 		animation.addByPrefix("pressed", prefix, 24, false);
 		animation.play("normal");
 		setGraphicSize(0, targetHeight);
@@ -47,11 +36,16 @@ class TouchButton extends FlxButton
 		return this;
 	}
 
-	public function resize(width:Float, height:Float):TouchButton
+	public function startsInside(point:TouchPoint):Bool
 	{
-		setGraphicSize(Std.int(width), Std.int(height));
-		updateHitbox();
-		return this;
+		return TouchInput.overlaps(this, point.startX, point.startY, padding);
+	}
+
+	public function setPressed(value:Bool):Void
+	{
+		if (value && !pressed && animation.exists("pressed"))
+			animation.play("pressed", true);
+		pressed = value;
 	}
 
 	public function collectKeys(into:Array<Int>):Void
@@ -68,5 +62,7 @@ class TouchButton extends FlxButton
 	{
 		super.update(elapsed);
 		alpha = pressed ? pressedAlpha : idleAlpha;
+		if (!pressed && animation.name == "pressed" && animation.finished)
+			animation.play("normal");
 	}
 }

@@ -108,6 +108,7 @@ class FreeplayState extends MusicBeatState
 
 		#if mobile
 		addTouchControls();
+		touchGestures.onTap = menuTap;
 		#end
 	}
 
@@ -255,4 +256,31 @@ class FreeplayState extends MusicBeatState
 				songs[selectedIndex].select();
 			}
 		}
+
+	#if mobile
+	function tappedButton(list:Array<TrickyButton>, x:Float, y:Float):Int
+	{
+		for (i in 0...list.length)
+			if (mobile.TouchInput.overlaps(list[i].spriteOne, x, y) || mobile.TouchInput.overlaps(list[i].spriteTwo, x, y))
+				return i;
+		return -1;
+	}
+
+	function menuTap(x:Float, y:Float):Bool
+	{
+		if (selectedSmth)
+			return true;
+
+		var index:Int = tappedButton(songs, x, y);
+		if (index == -1)
+			return true;
+		if (index == selectedIndex)
+			return false;
+
+		songs[selectedIndex].unHighlight();
+		songs[index].highlight();
+		selectedIndex = index;
+		return true;
+	}
+	#end
 }

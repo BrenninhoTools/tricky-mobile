@@ -113,6 +113,7 @@ class OptionsMenu extends MusicBeatState
 
 		#if mobile
 		addTouchControls();
+		touchGestures.onTap = menuTap;
 		#end
 	}
 
@@ -326,4 +327,21 @@ class OptionsMenu extends MusicBeatState
 
 		var bullShit:Int = 0;
 	}
+
+	#if mobile
+	function menuTap(x:Float, y:Float):Bool
+	{
+		for (i in 0...currentOptions.length)
+		{
+			if (!mobile.TouchInput.overlaps(currentOptions[i], x, y, 10))
+				continue;
+			if (i == curSelected)
+				return false;
+
+			changeSelection(i - curSelected);
+			return true;
+		}
+		return true;
+	}
+	#end
 }

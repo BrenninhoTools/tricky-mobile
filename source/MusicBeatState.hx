@@ -11,6 +11,7 @@ import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
 #if mobile
 import flixel.FlxCamera;
+import mobile.Hitbox;
 import mobile.MobileControls;
 import mobile.TouchGestures;
 import mobile.TouchGroup;
@@ -31,7 +32,7 @@ class MusicBeatState extends FlxUIState
 	#if mobile
 	public var touchGestures:TouchGestures;
 	public var backButton:TouchGroup;
-	public var mobileControls:TouchGroup;
+	public var mobileControls:Hitbox;
 	public var pauseButton:TouchGroup;
 
 	var touchCamera:FlxCamera;
@@ -98,7 +99,8 @@ class MusicBeatState extends FlxUIState
 			pauseButton = MobileControls.createPauseButton();
 			pauseButton.cameras = [getTouchCamera()];
 			add(pauseButton);
-			mobileControls.blockers = pauseButton.buttons;
+			for (button in pauseButton.buttons)
+				mobileControls.blockers.push(button);
 		}
 	}
 

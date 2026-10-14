@@ -37,20 +37,28 @@ class TouchKeyBridge
 		FlxG.android.preventDefaultKeys = [FlxAndroidKey.BACK];
 		#end
 
+		TouchInput.init();
 		FlxG.signals.preUpdate.add(onPreUpdate);
-		FlxG.signals.postUpdate.add(sync);
 		FlxG.signals.preStateSwitch.add(clear);
+	}
+
+	public static function isActive(lastUpdateFrame:Int):Bool
+	{
+		return lastUpdateFrame == frame - 1;
 	}
 
 	static function onPreUpdate():Void
 	{
 		frame++;
+		TouchInput.beginFrame();
+		sync();
+		TouchInput.endFrame();
 	}
 
 	static function sync():Void
 	{
 		var wanted:Array<Int> = [];
-		for (source in sources)
+		for (source in sources.copy())
 			source.collectKeys(wanted);
 
 		#if android

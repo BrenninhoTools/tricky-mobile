@@ -5,7 +5,7 @@ import flixel.input.keyboard.FlxKey;
 
 class MobileControls
 {
-	public static function createGameplay():TouchGroup
+	public static function createGameplay():Hitbox
 	{
 		return new Hitbox();
 	}

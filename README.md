@@ -28,9 +28,9 @@ or what ever platform, be it linux or mac or smth lol!
 
 btw special thanks to [GWebDev](https://github.com/GrowtopiaFli) for obviously video support, chad man.
 
-## Mobile (Android / iOS)
+## Android
 
-Every push to `master` builds an Android APK (arm64) and an unsigned iOS IPA through GitHub Actions (`Actions` tab → `Mobile Build` → artifacts).
+Every push to `master` builds an Android APK (arm64) through GitHub Actions (`Actions` tab → `Android Build` → artifacts).
 
 To build locally, use Haxe 4.3.7 and these libraries:
 
@@ -48,11 +48,11 @@ haxelib git hxvlc https://github.com/MAJigsaw77/hxvlc 6f78d992b6f311717514f51343
 
 `hxcpp-4.3.175.zip` comes from the [hxcpp releases](https://github.com/HaxeFoundation/hxcpp/releases/tag/v4.3.175).
 
-Then run `lime build android -final` (Android SDK, JDK 17 and NDK r28c) or `lime build ios -nosign -final` on macOS with Xcode.
+Then run `lime build android -final` with the Android SDK, JDK 17 and NDK r28c.
 
 Mobile controls are touch only:
 
-- Gameplay uses a 4-lane hitbox; the pause button sits in the top right corner.
-- In menus, swipe to move through options and tap to confirm.
+- Gameplay uses a 4-lane hitbox that lights up only while touched (or stays hidden with Invisible Hitbox); the pause button sits in the top right corner.
+- In menus, tap an option to select it and tap it again to confirm; dragging steps through options and values.
 - The back button in the top left corner (or the Android back button) goes back.
 - Story cutscenes play through hxvlc (libVLC) using the same `.webm` files; tap to skip.

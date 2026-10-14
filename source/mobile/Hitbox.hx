@@ -1,43 +1,153 @@
 package mobile;
 
 import flixel.FlxG;
-import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.FlxSprite;
+import flixel.group.FlxSpriteGroup;
 import flixel.input.keyboard.FlxKey;
+import mobile.TouchInput.TouchPoint;
+import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
+import openfl.display.BitmapData;
+import openfl.geom.Rectangle;
 
-class Hitbox extends TouchGroup
+class Hitbox extends FlxSpriteGroup implements TouchKeySource
 {
-	public var buttonLeft:TouchButton;
-	public var buttonDown:TouchButton;
-	public var buttonUp:TouchButton;
-	public var buttonRight:TouchButton;
+	static final KEYS:Array<FlxKey> = [FlxKey.LEFT, FlxKey.DOWN, FlxKey.UP, FlxKey.RIGHT];
+	static final COLORS:Array<FlxColor> = [0xFFC24B99, 0xFF00FFFF, 0xFF12FA05, 0xFFF9393F];
+	static inline var BORDER:Int = 5;
+	static inline var FADE_TIME:Float = 0.12;
+
+	public var lanes(default, null):Array<FlxSprite> = [];
+	public var blockers:Array<FlxSprite> = [];
+	public var invisible:Bool;
+
+	var down:Array<Bool> = [false, false, false, false];
+	var excluded:Array<Int> = [];
+	var laneWidth:Float;
+	var createdFrame:Int;
+	var lastFrame:Int = -1;
 
 	public function new()
 	{
 		super();
+		scrollFactor.set();
 
-		var atlas = Paths.getSparrowAtlas('mobile/hitbox', 'shared');
-		var laneWidth:Float = FlxG.width / 4;
+		invisible = FlxG.save.data.invisibleHitbox == true;
+		laneWidth = FlxG.width / KEYS.length;
 
-		buttonLeft = makeLane(atlas, 0, laneWidth, 'left', FlxKey.LEFT);
-		buttonDown = makeLane(atlas, 1, laneWidth, 'down', FlxKey.DOWN);
-		buttonUp = makeLane(atlas, 2, laneWidth, 'up', FlxKey.UP);
-		buttonRight = makeLane(atlas, 3, laneWidth, 'right', FlxKey.RIGHT);
+		for (i in 0...KEYS.length)
+		{
+			var lane:FlxSprite = new FlxSprite(Math.round(laneWidth * i), 0);
+			lane.loadGraphic(createLane(Math.round(laneWidth), FlxG.height, COLORS[i]), false, 0, 0, true, 'hitbox-lane-$i');
+			lane.antialiasing = true;
+			lane.alpha = 0;
+			lanes.push(lane);
+			add(lane);
+		}
+
+		createdFrame = TouchKeyBridge.frame;
+		TouchKeyBridge.register(this);
 	}
 
-	function makeLane(atlas:FlxAtlasFrames, index:Int, laneWidth:Float, name:String, key:FlxKey):TouchButton
+	static function createLane(width:Int, height:Int, color:FlxColor):BitmapData
 	{
-		var button = new TouchButton(0, 0, [key]);
-		button.idleAlpha = 0;
-		button.pressedAlpha = FlxG.save.data.invisibleHitbox == true ? 0 : 1;
-		button.loadTile(atlas, name, 160, 360);
-		button.resize(Math.ceil(laneWidth), FlxG.height);
-		button.setPosition(laneWidth * index, 0);
-		return addButton(button);
+		var top:FlxColor = color;
+		top.alphaFloat = 0;
+		var middle:FlxColor = color;
+		middle.alphaFloat = 0.12;
+		var bottom:FlxColor = color;
+		bottom.alphaFloat = 0.5;
+
+		var bitmap:BitmapData = FlxGradient.createGradientBitmapData(width, height, [top, middle, bottom], 1, 90);
+
+		var edge:FlxColor = color;
+		edge.alphaFloat = 0.9;
+		bitmap.fillRect(new Rectangle(0, 0, BORDER, height), edge);
+		bitmap.fillRect(new Rectangle(width - BORDER, 0, BORDER, height), edge);
+		bitmap.fillRect(new Rectangle(0, height - BORDER * 2, width, BORDER * 2), edge);
+
+		var shine:FlxColor = FlxColor.WHITE;
+		shine.alphaFloat = 0.35;
+		bitmap.fillRect(new Rectangle(BORDER, height - BORDER * 3, width - BORDER * 2, BORDER), shine);
+		return bitmap;
+	}
+
+	public function isDown(lane:Int):Bool
+	{
+		return down[lane];
+	}
+
+	function laneAt(x:Float):Int
+	{
+		var lane:Int = Math.floor(x / laneWidth);
+		return lane < 0 ? 0 : (lane >= KEYS.length ? KEYS.length - 1 : lane);
+	}
+
+	function startsOnBlocker(point:TouchPoint):Bool
+	{
+		for (blocker in blockers)
+			if (blocker != null && blocker.visible && TouchInput.overlaps(blocker, point.startX, point.startY, 20))
+				return true;
+		return false;
+	}
+
+	public function collectKeys(into:Array<Int>):Void
+	{
+		for (i in 0...down.length)
+			down[i] = false;
+
+		if (!exists || !alive || !active || !TouchKeyBridge.isActive(lastFrame))
+		{
+			excluded = [];
+			return;
+		}
+
+		var present:Array<Int> = [];
+		for (point in TouchInput.points)
+		{
+			if (point.startFrame < createdFrame)
+				continue;
+
+			present.push(point.id);
+
+			if (!point.seen && startsOnBlocker(point) && !excluded.contains(point.id))
+				excluded.push(point.id);
+
+			if (excluded.contains(point.id) || !point.down)
+				continue;
+
+			down[laneAt(point.x)] = true;
+		}
+
+		var i:Int = excluded.length;
+		while (i-- > 0)
+			if (!present.contains(excluded[i]))
+				excluded.splice(i, 1);
+
+		for (lane in 0...KEYS.length)
+			if (down[lane] && !into.contains(KEYS[lane]))
+				into.push(KEYS[lane]);
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+		lastFrame = TouchKeyBridge.frame;
+
+		for (i in 0...lanes.length)
+		{
+			if (down[i] && !invisible)
+				lanes[i].alpha = 1;
+			else if (lanes[i].alpha > 0)
+				lanes[i].alpha = Math.max(0, lanes[i].alpha - elapsed / FADE_TIME);
+		}
 	}
 
 	override function destroy()
 	{
-		buttonLeft = buttonDown = buttonUp = buttonRight = null;
+		TouchKeyBridge.unregister(this);
+		lanes = [];
+		blockers = [];
 		super.destroy();
 	}
 }

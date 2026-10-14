@@ -1,4 +1,4 @@
-name: Mobile Build
+name: Android Build
 
 on:
   push:
@@ -71,48 +71,3 @@ jobs:
           path: dist/VsTricky.apk
           if-no-files-found: error
 
-  ios:
-    name: iOS
-    runs-on: macos-15-intel
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install Neko Library
-        run: |
-          curl -sSL -o "$RUNNER_TEMP/neko.tar.gz" https://github.com/HaxeFoundation/neko/releases/download/v2-3-0/neko-2.3.0-osx64.tar.gz
-          tar xzf "$RUNNER_TEMP/neko.tar.gz" -C "$RUNNER_TEMP"
-          sudo mkdir -p /usr/local/lib
-          sudo cp "$RUNNER_TEMP"/neko-2.3.0-osx64/*.dylib /usr/local/lib/
-
-      - name: Setup Haxe
-        uses: krdlab/setup-haxe@v1
-        with:
-          haxe-version: ${{ env.HAXE_VERSION }}
-
-      - name: Install Libraries
-        run: bash .github/scripts/install-libs.sh
-
-      - name: Disable Code Signing
-        run: |
-          printf 'CODE_SIGNING_ALLOWED = NO\nCODE_SIGNING_REQUIRED = NO\nCODE_SIGN_IDENTITY =\nDEVELOPMENT_TEAM =\n' > "$RUNNER_TEMP/nosign.xcconfig"
-          echo "XCODE_XCCONFIG_FILE=$RUNNER_TEMP/nosign.xcconfig" >> "$GITHUB_ENV"
-
-      - name: Build
-        run: haxelib run lime build ios -nosign -final
-
-      - name: Package IPA
-        run: |
-          APP=$(ls -d export/release/ios/build/Release-iphoneos/*.app | head -n 1)
-          mkdir -p dist/Payload
-          cp -R "$APP" dist/Payload/
-          cd dist
-          zip -qr VsTricky.ipa Payload
-          rm -rf Payload
-
-      - name: Upload IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: VsTricky-iOS
-          path: dist/VsTricky.ipa
-          if-no-files-found: error

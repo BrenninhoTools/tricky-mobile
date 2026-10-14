@@ -84,6 +84,8 @@ class PauseSubState extends MusicBeatSubstate
 
 		#if mobile
 		addTouchControls(false, true);
+		touchGestures.horizontal = false;
+		touchGestures.onTap = menuTap;
 		#end
 	}
 
@@ -169,4 +171,21 @@ class PauseSubState extends MusicBeatSubstate
 			}
 		}
 	}
+
+	#if mobile
+	function menuTap(x:Float, y:Float):Bool
+	{
+		for (i in 0...grpMenuShit.members.length)
+		{
+			if (!mobile.TouchInput.overlaps(grpMenuShit.members[i], x, y, 10))
+				continue;
+			if (i == curSelected)
+				return false;
+
+			changeSelection(i - curSelected);
+			return true;
+		}
+		return true;
+	}
+	#end
 }

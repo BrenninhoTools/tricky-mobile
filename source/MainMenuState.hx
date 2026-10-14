@@ -382,6 +382,7 @@ class MainMenuState extends MusicBeatState
 		touchGestures.ignored.push(shower);
 		if (tinyMan != null)
 			touchGestures.ignored.push(tinyMan);
+		touchGestures.onTap = menuTap;
 		#end
 	}
 
@@ -708,4 +709,48 @@ class MainMenuState extends MusicBeatState
 		shower.animation.play('idle');
 		super.beatHit();
 	}
+
+	#if mobile
+	function tappedButton(list:Array<TrickyButton>, x:Float, y:Float):Int
+	{
+		for (i in 0...list.length)
+			if (mobile.TouchInput.overlaps(list[i].spriteOne, x, y) || mobile.TouchInput.overlaps(list[i].spriteTwo, x, y))
+				return i;
+		return -1;
+	}
+
+	function menuTap(x:Float, y:Float):Bool
+	{
+		if (selectingDiff)
+		{
+			var index:Int = tappedButton(listOfDiffButtons, x, y);
+			if (index == -1)
+				return true;
+			if (index == diffSelectedIndex)
+				return false;
+
+			listOfDiffButtons[diffSelectedIndex].unHighlight();
+			listOfDiffButtons[index].highlight();
+			diffSelectedIndex = index;
+			return true;
+		}
+
+		if (selectedSmth)
+			return true;
+
+		var index:Int = tappedButton(listOfButtons, x, y);
+		if (index == -1)
+			return true;
+		if (index == selectedIndex)
+			return false;
+
+		if (show == 'sus' && !killed && hand.alpha == 1)
+			FlxTween.tween(hand, {alpha: 0, x: shower.x + 60, y: shower.y + 60}, 0.6, {ease: FlxEase.expoInOut});
+
+		listOfButtons[selectedIndex].unHighlight();
+		listOfButtons[index].highlight();
+		selectedIndex = index;
+		return true;
+	}
+	#end
 }
